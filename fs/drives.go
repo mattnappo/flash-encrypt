@@ -1,6 +1,7 @@
-package mounting
+package fs
 
 import (
+	"fmt"
 	"io/ioutil"
 	"os"
 )
@@ -41,4 +42,9 @@ func GetDrivesDarwin() ([]string, error) {
 	}
 
 	return drives, nil
+}
+
+// GetDrivePath returns the drive path based on the oeprating system.
+func GetDrivePath(drive string) string {
+	return fmt.Sprintf("/Volumes/%s", drive)
 }

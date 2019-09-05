@@ -1,4 +1,4 @@
-package mounting
+package fs
 
 import (
 	"testing"

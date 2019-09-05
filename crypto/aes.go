@@ -5,7 +5,7 @@ import (
 	"crypto/cipher"
 	"crypto/rand"
 	"fmt"
-	"github.com/xoreo/flash-encrypt/common"
+	"github.com/xoreo/flash-encrypt/fs"
 	"io"
 	"io/ioutil"
 )
@@ -103,7 +103,7 @@ func DecryptFile(path, passphrase string) error {
 // EncryptDir encrypts an entire directory.
 func EncryptDir(path, passphrase string) error {
 	// Get file paths
-	paths, err := common.ListDir(path)
+	paths, err := fs.ListDir(path)
 	if err != nil {
 		return err
 	}
@@ -122,7 +122,7 @@ func EncryptDir(path, passphrase string) error {
 // DecryptDir decrypts an entire directory.
 func DecryptDir(path, passphrase string) error {
 	// Get file paths
-	paths, err := common.ListDir(path)
+	paths, err := fs.ListDir(path)
 	if err != nil {
 		return err
 	}
