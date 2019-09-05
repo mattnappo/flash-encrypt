@@ -4,29 +4,43 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
-	"fmt"
 	"io"
 	"io/ioutil"
 )
 
 // EncryptFile encrypts a file using the AES encryption standard.
 // passphrase is in plaintext.
-func EncryptFile(path string, passphrase string) ([]byte, error) {
+func EncryptFile(path string, passphrase string) error {
 	// Read the file
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	block, _ := aes.NewCipher(Argon2String(passphrase))
+	key := Argon2String(passphrase) // Create a new key
+
+	// Create an AES block
+	block, err := aes.NewCipher(key)
+	if err != nil {
+		return err
+	}
+
 	gcm, err := cipher.NewGCM(block)
 	if err != nil {
-		panic(err.Error())
+		return err
 	}
-	nonce := make([]byte, gcm.NonceSize())
-	if _, err = io.ReadFull(rand.Reader, nonce); err != nil {
-		panic(err.Error())
+
+	nonce := make([]byte, gcm.NonceSize()) // Get the nonce size of the block
+	_, err = io.ReadFull(rand.Reader, nonce)
+	if err != nil {
+		return err
 	}
-	ciphertext := gcm.Seal(nonce, nonce, data, nil)
-	return ciphertext
+
+	encryptedFile := gcm.Seal(nonce, nonce, data, nil) // Encrypt the data
+	err = ioutil.WriteFile(path, encryptedFile, 0644) // Write to file
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
