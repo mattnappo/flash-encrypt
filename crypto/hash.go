@@ -1,8 +1,6 @@
 package crypto
 
 import (
-	"crypto/rand"
-
 	"golang.org/x/crypto/argon2"
 )
 
@@ -23,32 +21,12 @@ func Argon2String(input string) (hash []byte, err error) {
 		memory:      64 * 1024,
 		iterations:  3,
 		parallelism: 2,
-		saltLength:  16,
+		saltLength:  0,
 		keyLength:   32,
 	}
 
-	// Generate a salt
-	salt, err := generateSalt(p.saltLength)
-	if err != nil {
-		return nil, err
-	}
-
 	// Return the hash
-	hash = argon2.IDKey([]byte(input), salt, p.iterations, p.memory, p.parallelism, p.keyLength)
+	hash = argon2.IDKey([]byte(input), []byte{}, p.iterations, p.memory, p.parallelism, p.keyLength)
 
 	return hash, nil
 }
-
-/* -- BEGIN PRIVATE METHODS -- */
-
-func generateSalt(n uint32) ([]byte, error) {
-	b := make([]byte, n)
-	_, err := rand.Read(b)
-	if err != nil {
-		return nil, err
-	}
-
-	return b, nil
-}
-
-/* -- END PRIVATE METHODS -- */
