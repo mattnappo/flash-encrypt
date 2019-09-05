@@ -19,3 +19,17 @@ func TestDecryptFile(t *testing.T) {
 		t.Fatal(err)
 	}
 }
+
+func TestEncryptDir(t *testing.T) {
+	err := EncryptDir("./test", "secret passphrase")
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestDecryptDir(t *testing.T) {
+	err := DecryptDir("./test", "secret passphrase")
+	if err != nil {
+		t.Fatal(err)
+	}
+}

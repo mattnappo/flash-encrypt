@@ -5,6 +5,7 @@ import (
 	"crypto/cipher"
 	"crypto/rand"
 	"fmt"
+	"github.com/xoreo/flash-encrypt/common"
 	"io"
 	"io/ioutil"
 )
@@ -96,5 +97,43 @@ func DecryptFile(path, passphrase string) error {
 
 	fmt.Println(decryptedFile)
 
+	return nil
+}
+
+// EncryptDir encrypts an entire directory.
+func EncryptDir(path, passphrase string) error {
+	// Get file paths
+	paths, err := common.ListDir(path)
+	if err != nil {
+		return err
+	}
+
+	// Encrypt each file
+	for i, path := range paths {
+		err = EncryptFile(path, passphrase)
+		if err != nil {
+			return err
+		}
+		fmt.Printf("[%d] '%s' encrypted\n", i, path)
+	}
+	return nil
+}
+
+// DecryptDir decrypts an entire directory.
+func DecryptDir(path, passphrase string) error {
+	// Get file paths
+	paths, err := common.ListDir(path)
+	if err != nil {
+		return err
+	}
+
+	// Encrypt each file
+	for i, path := range paths {
+		err = DecryptFile(path, passphrase)
+		if err != nil {
+			return err
+		}
+		fmt.Printf("[%d] '%s' decrypted\n", i, path)
+	}
 	return nil
 }
