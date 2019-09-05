@@ -1,6 +1,9 @@
 package mounting
 
-import "os"
+import (
+	"io/ioutil"
+	"os"
+)
 
 // GetDrives returns a list of all drives mounted on a windows machine.
 func GetDrivesWindows() ([]string, error) {
@@ -17,5 +20,25 @@ func GetDrivesWindows() ([]string, error) {
 			return []string{}, err
 		}
 	}
+	return drives, nil
+}
+
+// GetDrivesDarwin returns a list of all drives mounted on a MacOS machine.
+func GetDrivesDarwin() ([]string, error) {
+	var drives []string
+
+	mountedDrives, err := ioutil.ReadDir("/Volumes/")
+	if err != nil {
+		return []string{}, err
+	}
+
+	for _, drive := range mountedDrives {
+		name := drive.Name()
+		if name == "Macintosh HD" {
+			continue
+		}
+		drives = append(drives, drive.Name())
+	}
+
 	return drives, nil
 }
