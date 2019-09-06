@@ -73,7 +73,48 @@ func encrypt() error {
 }
 
 func decrypt() error {
+	drives, err := getDrives()
+	if err != nil {
+		return err
+	}
 
+	reader := bufio.NewReader(os.Stdin)
+
+	fmt.Print("Which drive do you want to decrypt? ")
+	targetDrive, err := reader.ReadString('\n')
+	if err != nil {
+		panic(err)
+	}
+	targetDrive = strings.TrimSuffix(targetDrive, "\n")
+
+	for i, drive := range drives {
+		if strconv.Itoa(i) == targetDrive {
+			fmt.Print("Are you sure you want to decrypt " + drive + " (yes/no)? ")
+			confirmation, err := reader.ReadString('\n')
+			if err != nil {
+				return err
+			}
+			confirmation = strings.TrimSuffix(confirmation, "\n")
+
+			if confirmation == "yes" {
+				fmt.Print("Passphrase: ")
+				passphrase, err := reader.ReadString('\n')
+				if err != nil {
+					return err
+				}
+				confirmation = strings.TrimSuffix(confirmation, "\n")
+
+				err = crypto.DecryptDir(fs.GetDrivePath(drive), passphrase)
+				if err != nil {
+					return err
+				}
+				fmt.Printf("Decrypted %s\n", drive)
+
+			} else {
+				return nil
+			}
+		}
+	}
 	return nil
 }
 

@@ -95,8 +95,6 @@ func DecryptFile(path, passphrase string) error {
 		return err
 	}
 
-	fmt.Println(decryptedFile)
-
 	return nil
 }
 
