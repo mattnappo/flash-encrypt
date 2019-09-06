@@ -9,33 +9,34 @@ import (
 )
 
 // ListDir returns a []string of the filepaths of all files in a directory.
-func ListDir(path string) ([]string, error) {
-	var paths []string
+func ListDir(rootPath string) ([]string, error) {
+	var allPaths []string
 
 	// Walk the directory
-	err := filepath.Walk(path, func(filepath string, f os.FileInfo, err error) error {
-		for _, prohibitedFile := range common.ProhibitedFiles {
-			prohibitedFileFormatted := fmt.Sprintf("%s%s", prohibitedFile, common.OSSlash)
-			containsProhibited := strings.Contains(
-				filepath,
-				prohibitedFileFormatted,
-			)
-			fmt.Printf("NAME: %s SPRINTF: %s CONTAINS: %t\n\n", prohibitedFileFormatted, filepath, containsProhibited)
-
-			if f.Name() == prohibitedFile || containsProhibited {
-				continue
-			}
-
-			if !f.IsDir() {
-				paths = append(paths, filepath)
-			}
+	err := filepath.Walk(rootPath, func(path string, f os.FileInfo, err error) error {
+		if !f.IsDir() {
+			allPaths = append(allPaths, path)
 		}
-
 		return nil
 	})
 
 	if err != nil {
 		return []string{}, err
+	}
+
+	var paths []string
+	for _, path := range allPaths {
+		add := true
+		for _, prohibitedFile := range common.ProhibitedFiles {
+			prohibitedFileFmt := fmt.Sprintf("%s%s", prohibitedFile, common.OSSlash)
+			if strings.Contains(path, prohibitedFileFmt) {
+				add = false
+			}
+		}
+
+		if add {
+			paths = append(paths, path)
+		}
 	}
 
 	return paths, nil

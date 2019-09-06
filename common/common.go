@@ -7,7 +7,6 @@ var (
 		".Trashes",
 		".Spotlight-V100",
 		".fseventsd",
-		".git",
 	}
 
 	// OSSlash represents the filepath slash delimiter for the current OS.
