@@ -1,6 +1,7 @@
 package fs
 
 import (
+	"github.com/xoreo/flash-encrypt/common"
 	"os"
 	"path/filepath"
 )
@@ -11,6 +12,11 @@ func ListDir(path string) ([]string, error) {
 
 	// Walk the directory
 	err := filepath.Walk(path, func(path string, f os.FileInfo, err error) error {
+		for _, prohibitedFile := range common.ProhibitedFiles {
+			if f.Name() == prohibitedFile {
+				continue
+			}
+		}
 		if !f.IsDir() {
 			paths = append(paths, path)
 		}
