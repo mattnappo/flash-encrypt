@@ -14,9 +14,43 @@ import (
 	"time"
 )
 
+// GenerateKey generates a new AES key.
+func GenerateKey(passphrase string) (*Key, error) {
+	// Create the key
+	key, err := Argon2String(passphrase)
+	if err != nil {
+		return nil, err
+	}
+
+	// Create an AES block
+	block, err := aes.NewCipher(key)
+	if err != nil {
+		return nil, err
+	}
+
+	// Get the GCM of the block
+	gcm, err := cipher.NewGCM(block)
+	if err != nil {
+		return nil, err
+	}
+
+	// Get the nonce size of the block
+	nonce := make([]byte, gcm.NonceSize())
+	_, err = io.ReadFull(rand.Reader, nonce)
+	if err != nil {
+		return nil, err
+	}
+
+	// Return a new key
+	return &Key{
+		GCM: gcm,
+		Nonce: nonce,
+	}, nil
+
+}
 // EncryptFile encrypts a file using the AES encryption standard.
 // passphrase is in plaintext.
-func EncryptFile(path, passphrase string) error {
+func EncryptFile(path string, key *Key) error {
 	if strings.Contains(path, "flash-encrypt") {
 		return nil
 	}
@@ -27,32 +61,7 @@ func EncryptFile(path, passphrase string) error {
 		return err
 	}
 
-	// Create the key
-	key, err := Argon2String(passphrase)
-	if err != nil {
-		return err
-	}
-
-	// Create an AES block
-	block, err := aes.NewCipher(key)
-	if err != nil {
-		return err
-	}
-
-	// Get the GCM of the block
-	gcm, err := cipher.NewGCM(block)
-	if err != nil {
-		return err
-	}
-
-	// Get the nonce size of the block
-	nonce := make([]byte, gcm.NonceSize())
-	_, err = io.ReadFull(rand.Reader, nonce)
-	if err != nil {
-		return err
-	}
-
-	encryptedFile := gcm.Seal(nonce, nonce, data, nil) // Encrypt the data
+	encryptedFile := (*key).GCM.Seal((*key).Nonce, (*key).Nonce, data, nil) // Encrypt the data
 	err = ioutil.WriteFile(path, encryptedFile, 0644)  // Write to file
 	if err != nil {
 		return err
@@ -112,9 +121,14 @@ func DecryptFile(path, passphrase string) error {
 
 // EncryptDir encrypts an entire directory.
 func EncryptDir(rootPath, passphrase string) error {
-
 	// Get file paths
 	paths, err := fs.ListDir(rootPath)
+	if err != nil {
+		return err
+	}
+
+	// Generate a new key
+	key, err := GenerateKey(passphrase)
 	if err != nil {
 		return err
 	}
@@ -130,7 +144,7 @@ func EncryptDir(rootPath, passphrase string) error {
 		go func() {
 			defer wg.Done()
 
-			errChan <- EncryptFile(path, passphrase) // Encrypt the file
+			errChan <- EncryptFile(path, key) // Encrypt the file
 
 			fmt.Printf("[%d] '%s' encrypted\n", i, path)
 		}()
