@@ -1,8 +1,6 @@
 package fs
 
-import (
-	"testing"
-)
+import "testing"
 
 //func TestGetDrivesWindows(t *testing.T) {
 //	drives, err := GetDrivesWindows()
@@ -13,7 +11,7 @@ import (
 //	for i, drive := range drives {
 //		t.Logf("[%d] %s\n", i, drive)
 //	}
-}
+//}
 
 func TestGetDrivesDarwin(t *testing.T) {
 	drives, err := GetDrivesDarwin()
