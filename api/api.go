@@ -5,9 +5,11 @@ import (
 	"fmt"
 	"github.com/xoreo/flash-encrypt/crypto"
 	"github.com/xoreo/flash-encrypt/fs"
+	"golang.org/x/crypto/ssh/terminal"
 	"os"
 	"strconv"
 	"strings"
+	"syscall"
 )
 
 // Encrypt is an abstracted method to encrypt a directory.
@@ -34,11 +36,11 @@ func Encrypt(targetDriveID string) error {
 			if confirmation == "yes" {
 				// Ask for passphrase
 				fmt.Print("Passphrase: ")
-				passphrase, err := reader.ReadString('\n')
+				passphraseBytes, err := terminal.ReadPassword(int(syscall.Stdin))
 				if err != nil {
 					return err
 				}
-				passphrase = strings.TrimSuffix(passphrase, "\n")
+				passphrase := strings.TrimSpace(string(passphraseBytes))
 
 				// Encrypt the entire flash drive
 				err = crypto.EncryptDir(fs.GetDrivePath(drive), passphrase)
@@ -81,11 +83,11 @@ func Decrypt(targetDriveID string) error {
 			if confirmation == "yes" {
 				// Ask for passphrase
 				fmt.Print("Passphrase: ")
-				passphrase, err := reader.ReadString('\n')
+				passphraseBytes, err := terminal.ReadPassword(int(syscall.Stdin))
 				if err != nil {
 					return err
 				}
-				passphrase = strings.TrimSuffix(passphrase, "\n")
+				passphrase := strings.TrimSpace(string(passphraseBytes))
 
 				// Decrypt the entire directory
 				err = crypto.DecryptDir(fs.GetDrivePath(drive), passphrase)
