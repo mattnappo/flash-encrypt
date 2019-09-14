@@ -8,7 +8,10 @@ import (
 	"github.com/xoreo/flash-encrypt/fs"
 	"io"
 	"io/ioutil"
+	"log"
 	"strings"
+	"sync"
+	"time"
 )
 
 // EncryptFile encrypts a file using the AES encryption standard.
@@ -108,21 +111,40 @@ func DecryptFile(path, passphrase string) error {
 }
 
 // EncryptDir encrypts an entire directory.
-func EncryptDir(path, passphrase string) error {
+func EncryptDir(rootPath, passphrase string) error {
+
 	// Get file paths
-	paths, err := fs.ListDir(path)
+	paths, err := fs.ListDir(rootPath)
 	if err != nil {
 		return err
 	}
 
-	// Encrypt each file
+	start := time.Now()
+
+	// Encrypt all the files synchronously
+	var wg sync.WaitGroup // Initialize the waitgroup
 	for i, path := range paths {
-		err = EncryptFile(path, passphrase)
-		if err != nil {
+		wg.Add(1)
+
+		errChan := make(chan error)
+		go func() {
+			defer wg.Done()
+
+			errChan <- EncryptFile(path, passphrase) // Encrypt the file
+
+			fmt.Printf("[%d] '%s' encrypted\n", i, path)
+		}()
+
+		if <- errChan != nil {
 			return err
 		}
-		fmt.Printf("[%d] '%s' encrypted\n", i, path)
 	}
+
+	wg.Wait() // Wait for the waitgroup to finish
+
+	elapsed := time.Since(start)
+	log.Printf("Encryption took %s", elapsed)
+
 	return nil
 }
 
