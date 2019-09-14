@@ -8,11 +8,16 @@ import (
 	"github.com/xoreo/flash-encrypt/fs"
 	"io"
 	"io/ioutil"
+	"strings"
 )
 
 // EncryptFile encrypts a file using the AES encryption standard.
 // passphrase is in plaintext.
 func EncryptFile(path, passphrase string) error {
+	if strings.Contains(path, "flash-encrypt") {
+		return nil
+	}
+
 	// Read the file
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
@@ -56,6 +61,10 @@ func EncryptFile(path, passphrase string) error {
 // DecryptFile decrypts a file using the AES encryption standard.
 // passphrase is in plaintext.
 func DecryptFile(path, passphrase string) error {
+	if strings.Contains(path, "flash-encrypt") {
+		return nil
+	}
+
 	// Read the file
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
