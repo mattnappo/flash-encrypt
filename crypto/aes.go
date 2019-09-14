@@ -43,11 +43,13 @@ func GenerateKey(passphrase string) (*Key, error) {
 
 	// Return a new key
 	return &Key{
-		GCM: gcm,
-		Nonce: nonce,
+		GCM:       gcm,
+		Nonce:     nonce,
+		NonceSize: gcm.NonceSize(),
 	}, nil
 
 }
+
 // EncryptFile encrypts a file using the AES encryption standard.
 // passphrase is in plaintext.
 func EncryptFile(path string, key *Key) error {
@@ -62,7 +64,7 @@ func EncryptFile(path string, key *Key) error {
 	}
 
 	encryptedFile := (*key).GCM.Seal((*key).Nonce, (*key).Nonce, data, nil) // Encrypt the data
-	err = ioutil.WriteFile(path, encryptedFile, 0644)  // Write to file
+	err = ioutil.WriteFile(path, encryptedFile, 0644)                       // Write to file
 	if err != nil {
 		return err
 	}
@@ -72,7 +74,7 @@ func EncryptFile(path string, key *Key) error {
 
 // DecryptFile decrypts a file using the AES encryption standard.
 // passphrase is in plaintext.
-func DecryptFile(path, passphrase string) error {
+func DecryptFile(path string, key *Key) error {
 	if strings.Contains(path, "flash-encrypt") {
 		return nil
 	}
@@ -83,30 +85,12 @@ func DecryptFile(path, passphrase string) error {
 		return err
 	}
 
-	// Create the key
-	key, err := Argon2String(passphrase)
-	if err != nil {
-		return err
-	}
-
-	// Create a block
-	block, err := aes.NewCipher(key)
-	if err != nil {
-		return err
-	}
-
-	// Get the block GCM
-	gcm, err := cipher.NewGCM(block)
-	if err != nil {
-		return err
-	}
-
 	// Calculate the nonce
-	nonceSize := gcm.NonceSize()
+	nonceSize := (*key).NonceSize
 	nonce, encryptedFile := data[:nonceSize], data[nonceSize:]
 
 	// Decrypt the file data
-	decryptedFile, err := gcm.Open(nil, nonce, encryptedFile, nil)
+	decryptedFile, err := (*key).GCM.Open(nil, nonce, encryptedFile, nil)
 	if err != nil {
 		return err
 	}
@@ -149,7 +133,7 @@ func EncryptDir(rootPath, passphrase string) error {
 			fmt.Printf("[%d] '%s' encrypted\n", i, path)
 		}()
 
-		if <- errChan != nil {
+		if <-errChan != nil {
 			return err
 		}
 	}
@@ -170,13 +154,37 @@ func DecryptDir(path, passphrase string) error {
 		return err
 	}
 
-	// Encrypt each file
+	// Generate a new key
+	key, err := GenerateKey(passphrase)
+	if err != nil {
+		return err
+	}
+
+	start := time.Now()
+
+	// Decrypt all the files synchronously
+	var wg sync.WaitGroup // Initialize the waitgroup
 	for i, path := range paths {
-		err = DecryptFile(path, passphrase)
-		if err != nil {
+		wg.Add(1)
+
+		errChan := make(chan error)
+		go func() {
+			defer wg.Done()
+
+			errChan <- DecryptFile(path, key) // Encrypt the file
+
+			fmt.Printf("[%d] '%s' decrypted\n", i, path)
+		}()
+
+		if <-errChan != nil {
 			return err
 		}
-		fmt.Printf("[%d] '%s' decrypted\n", i, path)
 	}
+
+	wg.Wait() // Wait for the waitgroup to finish
+
+	elapsed := time.Since(start)
+	log.Printf("Decryption took %s", elapsed)
+
 	return nil
 }
