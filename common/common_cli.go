@@ -23,37 +23,36 @@ func ParseCommand(input string) (string, string, []string, error) {
 		method = strings.Split(strings.Split(input, "(")[0], ".")[1] // Fetch method
 	}
 
-	receiver := StringFetchCallReceiver(input)
+	receiver := GetReceiver(input)
 
 	var params []string // Init buffer
 
 	if strings.Contains(input, ",") || !strings.Contains(input, "()") { // Check for nil params
-		params, _ = ParseStringParams(input) // Fetch params
+		params, _ = ParseParams(input) // Fetch params
 	}
 
 	return receiver, method, params, nil // No error occurred, return parsed method+params
 }
 
-// StringFetchCallReceiver - attempt to fetch receiver from string, as if it were an x.y(..., ..., ...) style method call
-func StringFetchCallReceiver(input string) string {
+// GetReceiver returns the receiver of a method call.
+func GetReceiver(input string) string {
 	return strings.Split(strings.Split(input, "(")[0], ".")[0] // Return split string
 }
 
-// ParseStringParams - attempt to fetch string parameters from (..., ..., ...) style call
-func ParseStringParams(input string) ([]string, error) {
+// ParseParams returns the parameters of a method call.
+func ParseParams(input string) ([]string, error) {
 	if input == "" { // Check for errors
 		return []string{}, ErrNilInput // Return found error
 	}
 
-	parenthesesStripped := StringStripReceiverCall(input) // Strip parentheses
-
+	parenthesesStripped := StripReceiver(input) // Strip parentheses
 	params := strings.Split(parenthesesStripped, ", ") // Split by ', '
 
 	return params, nil // No error occurred, return split params
 }
 
-// StringStripReceiverCall - strip receiver from string method call
-func StringStripReceiverCall(input string) string {
+// StripReceiver strips the receiver from a method call.
+func StripReceiver(input string) string {
 	openParenthIndex := strings.Index(input, "(")      // Get open parent index
 	closeParenthIndex := strings.LastIndex(input, ")") // Get close parent index
 
