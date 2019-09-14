@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"github.com/xoreo/flash-encrypt/common"
 	"github.com/xoreo/flash-encrypt/crypto"
 	"github.com/xoreo/flash-encrypt/fs"
 	"os"
@@ -149,6 +150,17 @@ func main() {
 			panic(err)
 		}
 		command = strings.TrimSuffix(command, "\n")
+
+		receiver, methodname, params, err := common.ParseCommand(command)
+		if err != nil {
+			panic(err.Error())
+		}
+
+		fmt.Printf("%s\n%s\n", receiver, methodname)
+		for _, param := range params {
+			fmt.Printf("%s, ", param)
+		}
+		fmt.Print("\n\n")
 
 		switch strings.ToLower(command) {
 		case "encrypt":
