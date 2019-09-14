@@ -1,6 +1,9 @@
 package cli
 
-import "errors"
+import (
+	"errors"
+	"strings"
+)
 
 // Command represents a command.
 type Command struct {
@@ -18,8 +21,8 @@ func NewCommand(receiver, method string, params []string) (Command, error) {
 
 	// Return a new command
 	return Command{
-		Receiver: receiver,
-		Method: method,
+		Receiver: strings.ToLower(receiver),
+		Method: strings.ToLower(method),
 		Params: params,
 	}, nil
 }

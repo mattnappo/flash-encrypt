@@ -11,9 +11,9 @@ var (
 )
 
 // ParseCommand parses a command from the CLI input.
-func ParseCommand(input string) (string, string, []string, error) {
+func ParseCommand(input string) (Command, error) {
 	if input == "" { // Check for errors
-		return "", "", []string{}, ErrNilInput // Return found error
+		return Command{}, ErrNilInput // Return found error
 	} else if !strings.Contains(input, "(") || !strings.Contains(input, ")") {
 		input = input + "()" // Fetch receiver methods
 	}
@@ -31,7 +31,12 @@ func ParseCommand(input string) (string, string, []string, error) {
 		params, _ = parseParams(input) // Fetch params
 	}
 
-	return receiver, method, params, nil // No error occurred, return parsed method+params
+	command, err := NewCommand(receiver, method, params)
+	if err != nil {
+		return command, err
+	}
+
+	return command, nil // No error occurred, return parsed method+params
 }
 
 /* -- BEGIN INTERNAL METHODS -- */
