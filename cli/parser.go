@@ -18,12 +18,14 @@ func ParseCommand(input string) (Command, error) {
 		input = input + "()" // Fetch receiver methods
 	}
 
-	var method string
-	if strings.Contains(input, ".") { // Check for nil receiver
+	var method, receiver string
+	if !strings.Contains(input, ".") { // Check for nil receiver
+		method = strings.Split(input, "(")[0] // Fetch method
+		receiver = ""
+	} else {
 		method = strings.Split(strings.Split(input, "(")[0], ".")[1] // Fetch method
+		receiver = getReceiver(input)
 	}
-
-	receiver := getReceiver(input)
 
 	var params []string // Init buffer
 

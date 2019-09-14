@@ -14,6 +14,7 @@ func NewCLI() error {
 	// Print the header information
 	printHeader()
 
+	// Set stdin input buffer
 	reader := bufio.NewReader(os.Stdin)
 
 	for {
@@ -38,7 +39,6 @@ func NewCLI() error {
 			return err
 		}
 
-		//fmt.Printf("'%s' is not a valid command. Run 'help' for help.", command)
 	}
 }
 
@@ -58,6 +58,7 @@ func handleCommand(command Command) error {
 func handleNoReceiver(command Command) error {
 	switch command.Method {
 	case "encrypt":
+		// Run the code to encrypt
 		err := api.Encrypt()
 		if err != nil {
 			return err
@@ -65,12 +66,41 @@ func handleNoReceiver(command Command) error {
 		break
 
 	case "decrypt":
+		// Run the code to decrypt
 		err := api.Decrypt()
 		if err != nil {
 			return err
 		}
 		break
+
+	case "drives":
+		// Run the code to list the current drives
+		err := api.ListDrives()
+		if err != nil {
+			return err
+		}
+		break
+
+	case "status":
+		// Run the code to check the status of a drive
+		err := api.Status()
+		if err != nil {
+			return err
+		}
+		break
+
+	case "help":
+		printHelp()
+		break
+
+	case "exit":
+		return nil
+
+	default:
+		fmt.Printf("'%s' is not a valid command. Run 'help' for help.", command.Method)
 	}
+
+	return nil
 }
 
 func printHeader() {
@@ -82,4 +112,8 @@ func printHeader() {
 	fmt.Println("/_/ /____/_/ |_/___/_//_/   /___/_/|_/\\___/_/|_| /_/_/    /_/    ")
 	fmt.Println("v2.0!")
 	fmt.Println("Run 'help' for help!")
+}
+
+func printHelp() {
+	fmt.Println("this is the help")
 }

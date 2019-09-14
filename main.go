@@ -3,16 +3,13 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"github.com/xoreo/flash-encrypt/cli"
 	"github.com/xoreo/flash-encrypt/crypto"
 	"github.com/xoreo/flash-encrypt/fs"
 	"os"
 	"strconv"
 	"strings"
 )
-
-func printHelp() {
-	fmt.Println("This is the help menu.")
-}
 
 func printDrives() ([]string, error) {
 	drives, err := fs.GetDrivesDarwin()
@@ -122,5 +119,8 @@ func decrypt() error {
 }
 
 func main() {
-
+	err := cli.NewCLI()
+	if err != nil {
+		panic(err)
+	}
 }
