@@ -2,19 +2,34 @@ package crypto
 
 import "testing"
 
-func TestEncryptFile(t *testing.T) {
-	passphrase := "secret passphrase"
+func TestGenerateKey(t *testing.T) {
+	key, err := GenerateKey("secret passphrase")
+	if err != nil {
+		t.Fatal(err)
+	}
 
-	err := EncryptFile("./test/testfile", passphrase)
+	t.Log(*key)
+}
+
+func TestEncryptFile(t *testing.T) {
+	key, err := GenerateKey("secret passphrase")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = EncryptFile("./test/testfile", key)
 	if err != nil {
 		t.Fatal(err)
 	}
 }
 
 func TestDecryptFile(t *testing.T) {
-	passphrase := "secret passphrase"
+	key, err := GenerateKey("secret passphrase")
+	if err != nil {
+		t.Fatal(err)
+	}
 
-	err := DecryptFile("./test/testfile", passphrase)
+	err = DecryptFile("./test/testfile", key)
 	if err != nil {
 		t.Fatal(err)
 	}

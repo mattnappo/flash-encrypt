@@ -11,6 +11,15 @@ import (
 	"strings"
 )
 
+func printHeader() {
+	fmt.Println("Welcome to")
+	fmt.Println("   ______   ___   ______ __    _____  ____________  _____  ______")
+	fmt.Println("  / __/ /  / _ | / __/ // /___/ __/ |/ / ___/ _ \\ \\/ / _ \\/_  __/")
+	fmt.Println(" / _// /__/ __ |_\\ \\/ _  /___/ _//    / /__/ , _/\\  / ___/ / /   ")
+	fmt.Println("/_/ /____/_/ |_/___/_//_/   /___/_/|_/\\___/_/|_| /_/_/    /_/    ")
+	fmt.Println("v2.0!")
+}
+
 func getDrives() ([]string, error) {
 	drives, err := fs.GetDrivesDarwin()
 	if err != nil {
@@ -119,6 +128,7 @@ func decrypt() error {
 }
 
 func main() {
+	printHeader()
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Println("[0] Encrypt\n[1] Decrypt")
 	option, err := reader.ReadString('\n')
