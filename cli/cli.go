@@ -18,7 +18,7 @@ func NewCLI() error {
 	reader := bufio.NewReader(os.Stdin)
 
 	for {
-		fmt.Print("\n> ")
+		fmt.Print("> ")
 
 		// Read input from user
 		commandString, err := reader.ReadString('\n')
@@ -50,6 +50,9 @@ func handleCommand(command Command) error {
 			return err
 		}
 		break
+
+	default:
+		fmt.Printf("'%s' is an unknown receiver.\n", command.Receiver)
 	}
 
 	return nil
@@ -97,7 +100,7 @@ func handleNoReceiver(command Command) error {
 		return nil
 
 	default:
-		fmt.Printf("'%s' is not a valid command. Run 'help' for help.", command.Method)
+		fmt.Printf("'%s' is not a valid command. Run 'help' for help.\n", command.Method)
 	}
 
 	return nil
