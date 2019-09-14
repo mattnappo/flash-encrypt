@@ -100,6 +100,7 @@ func Decrypt(targetDriveID string) error {
 			} else {
 				return nil
 			}
+
 		}
 	}
 	return nil
