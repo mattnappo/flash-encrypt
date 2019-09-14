@@ -1,10 +1,45 @@
 package cli
 
-import "github.com/xoreo/flash-encrypt/api"
+import (
+	"bufio"
+	"fmt"
+	"github.com/xoreo/flash-encrypt/api"
+	"os"
+	"os/exec"
+	"strings"
+)
 
 // NewCLI creates a new CLI.
-func NewCLI() {
+func NewCLI() error {
+	// Print the header information
+	printHeader()
 
+	reader := bufio.NewReader(os.Stdin)
+
+	for {
+		fmt.Print("\n> ")
+
+		// Read input from user
+		commandString, err := reader.ReadString('\n')
+		if err != nil {
+			return err
+		}
+		commandString = strings.TrimSuffix(commandString, "\n")
+
+		// Parse the command
+		command, err := ParseCommand(commandString)
+		if err != nil {
+			return err
+		}
+
+		// Handle the command
+		err = handleCommand(command)
+		if err != nil {
+			return err
+		}
+
+		//fmt.Printf("'%s' is not a valid command. Run 'help' for help.", command)
+	}
 }
 
 func handleCommand(command Command) error {
@@ -36,4 +71,15 @@ func handleNoReceiver(command Command) error {
 		}
 		break
 	}
+}
+
+func printHeader() {
+	exec.Command("clear")
+	fmt.Println("Welcome to")
+	fmt.Println("   ______   ___   ______ __    _____  ____________  _____  ______")
+	fmt.Println("  / __/ /  / _ | / __/ // /___/ __/ |/ / ___/ _ \\ \\/ / _ \\/_  __/")
+	fmt.Println(" / _// /__/ __ |_\\ \\/ _  /___/ _//    / /__/ , _/\\  / ___/ / /   ")
+	fmt.Println("/_/ /____/_/ |_/___/_//_/   /___/_/|_/\\___/_/|_| /_/_/    /_/    ")
+	fmt.Println("v2.0!")
+	fmt.Println("Run 'help' for help!")
 }

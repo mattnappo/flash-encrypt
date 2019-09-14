@@ -3,25 +3,12 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"github.com/xoreo/flash-encrypt/common"
 	"github.com/xoreo/flash-encrypt/crypto"
 	"github.com/xoreo/flash-encrypt/fs"
 	"os"
-	"os/exec"
 	"strconv"
 	"strings"
 )
-
-func printHeader() {
-	exec.Command("clear")
-	fmt.Println("Welcome to")
-	fmt.Println("   ______   ___   ______ __    _____  ____________  _____  ______")
-	fmt.Println("  / __/ /  / _ | / __/ // /___/ __/ |/ / ___/ _ \\ \\/ / _ \\/_  __/")
-	fmt.Println(" / _// /__/ __ |_\\ \\/ _  /___/ _//    / /__/ , _/\\  / ___/ / /   ")
-	fmt.Println("/_/ /____/_/ |_/___/_//_/   /___/_/|_/\\___/_/|_| /_/_/    /_/    ")
-	fmt.Println("v2.0!")
-	fmt.Println("Run 'help' for help!")
-}
 
 func printHelp() {
 	fmt.Println("This is the help menu.")
@@ -135,58 +122,5 @@ func decrypt() error {
 }
 
 func main() {
-	printHeader()
-	_, err := printDrives()
-	if err != nil {
-		panic(err)
-	}
-
-	for {
-		reader := bufio.NewReader(os.Stdin)
-		fmt.Print("\n> ")
-
-		command, err := reader.ReadString('\n')
-		if err != nil {
-			panic(err)
-		}
-		command = strings.TrimSuffix(command, "\n")
-
-		receiver, methodname, params, err := common.ParseCommand(command)
-		if err != nil {
-			panic(err.Error())
-		}
-
-		fmt.Printf("%s\n%s\n", receiver, methodname)
-		for _, param := range params {
-			fmt.Printf("%s, ", param)
-		}
-		fmt.Print("\n\n")
-
-		switch strings.ToLower(command) {
-		case "encrypt":
-			err = encrypt()
-			if err != nil {
-				panic(err)
-			}
-			break
-
-		case "decrypt":
-			err = decrypt()
-			if err != nil {
-				panic(err)
-			}
-			break
-
-		case "exit":
-			break
-
-		case "help":
-			printHelp()
-			break
-
-		default:
-			fmt.Printf("'%s' is not a valid command. Run 'help' for help.", command)
-		}
-	}
 
 }
