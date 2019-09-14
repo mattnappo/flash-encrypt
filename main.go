@@ -2,25 +2,31 @@ package main
 
 import (
 	"bufio"
-	"errors"
 	"fmt"
 	"github.com/xoreo/flash-encrypt/crypto"
 	"github.com/xoreo/flash-encrypt/fs"
 	"os"
+	"os/exec"
 	"strconv"
 	"strings"
 )
 
 func printHeader() {
+	exec.Command("clear")
 	fmt.Println("Welcome to")
 	fmt.Println("   ______   ___   ______ __    _____  ____________  _____  ______")
 	fmt.Println("  / __/ /  / _ | / __/ // /___/ __/ |/ / ___/ _ \\ \\/ / _ \\/_  __/")
 	fmt.Println(" / _// /__/ __ |_\\ \\/ _  /___/ _//    / /__/ , _/\\  / ___/ / /   ")
 	fmt.Println("/_/ /____/_/ |_/___/_//_/   /___/_/|_/\\___/_/|_| /_/_/    /_/    ")
 	fmt.Println("v2.0!")
+	fmt.Println("Run 'help' for help!")
 }
 
-func getDrives() ([]string, error) {
+func printHelp() {
+	fmt.Println("This is the help menu.")
+}
+
+func printDrives() ([]string, error) {
 	drives, err := fs.GetDrivesDarwin()
 	if err != nil {
 		panic(err)
@@ -35,7 +41,7 @@ func getDrives() ([]string, error) {
 }
 
 func encrypt() error {
-	drives, err := getDrives()
+	drives, err := printDrives()
 	if err != nil {
 		return err
 	}
@@ -82,7 +88,7 @@ func encrypt() error {
 }
 
 func decrypt() error {
-	drives, err := getDrives()
+	drives, err := printDrives()
 	if err != nil {
 		return err
 	}
@@ -129,31 +135,46 @@ func decrypt() error {
 
 func main() {
 	printHeader()
-	reader := bufio.NewReader(os.Stdin)
-	fmt.Println("[0] Encrypt\n[1] Decrypt")
-	option, err := reader.ReadString('\n')
+	_, err := printDrives()
 	if err != nil {
 		panic(err)
 	}
-	option = strings.TrimSuffix(option, "\n")
 
-	switch option {
-	case "0":
-		err = encrypt()
+	for {
+		reader := bufio.NewReader(os.Stdin)
+		fmt.Print("\n> ")
+
+		command, err := reader.ReadString('\n')
 		if err != nil {
 			panic(err)
 		}
-		break
+		command = strings.TrimSuffix(command, "\n")
 
-	case "1":
-		err = decrypt()
-		if err != nil {
-			panic(err)
+		switch strings.ToLower(command) {
+		case "encrypt":
+			err = encrypt()
+			if err != nil {
+				panic(err)
+			}
+			break
+
+		case "decrypt":
+			err = decrypt()
+			if err != nil {
+				panic(err)
+			}
+			break
+
+		case "exit":
+			break
+
+		case "help":
+			printHelp()
+			break
+
+		default:
+			fmt.Printf("'%s' is not a valid command. Run 'help' for help.", command)
 		}
-
-		break
-	default:
-		panic(errors.New(fmt.Sprintf("'%s' is not an option", option)))
 	}
 
 }
