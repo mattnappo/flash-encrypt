@@ -5,7 +5,7 @@ import "testing"
 func TestEncryptFile(t *testing.T) {
 	passphrase := "secret passphrase"
 
-	err := EncryptFile("./testfile", passphrase)
+	err := EncryptFile("./test/testfile", passphrase)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -14,7 +14,7 @@ func TestEncryptFile(t *testing.T) {
 func TestDecryptFile(t *testing.T) {
 	passphrase := "secret passphrase"
 
-	err := DecryptFile("./testfile", passphrase)
+	err := DecryptFile("./test/testfile", passphrase)
 	if err != nil {
 		t.Fatal(err)
 	}
