@@ -18,8 +18,9 @@ var (
 	// ErrInvalidParamCount is thrown when an invalid number of parameters is used in a command.
 	ErrInvalidParamCount = errors.New("invalid number of parameters to call method")
 )
+
 // NewCLI creates a new CLI.
-func NewCLI() error {
+func NewCLI() {
 	// Print the header information
 	printHeader()
 
@@ -32,20 +33,20 @@ func NewCLI() error {
 		// Read input from user
 		commandString, err := reader.ReadString('\n')
 		if err != nil {
-			return err
+			fmt.Println(err.Error())
 		}
 		commandString = strings.TrimSuffix(commandString, "\n")
 
 		// Parse the command
 		command, err := ParseCommand(commandString)
 		if err != nil {
-			return err
+			fmt.Println(err.Error())
 		}
 
 		// Handle the command
 		err = handleCommand(command)
 		if err != nil {
-			return err
+			fmt.Println(err.Error())
 		}
 
 	}
@@ -139,13 +140,16 @@ func printHeader() {
 // printHelp prints the help screen of the CLI.
 func printHelp() error {
 	helpFile := fmt.Sprintf("cli%shelp.txt", common.OSSlash)
+
+	// Read from the help file
 	help, err := ioutil.ReadFile(helpFile)
 	if err != nil {
 		return err
 	}
 
+	// Print the help file
 	helpString := string(help)
-
 	fmt.Println(helpString)
+
 	return nil
 }

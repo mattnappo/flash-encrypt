@@ -5,8 +5,5 @@ import (
 )
 
 func main() {
-	err := cli.NewCLI()
-	if err != nil {
-		panic(err)
-	}
+	cli.NewCLI()
 }

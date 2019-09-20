@@ -2,6 +2,7 @@ package api
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"github.com/xoreo/flash-encrypt/crypto"
 	"github.com/xoreo/flash-encrypt/fs"
@@ -22,9 +23,11 @@ func Encrypt(targetDriveID string) error {
 		return err
 	}
 
+	found := false
 	// Find the drive name
 	for i, drive := range drives {
 		if strconv.Itoa(i) == targetDriveID {
+			found = true
 			// Confirm
 			fmt.Print("Are you sure you want to encrypt " + drive + " (yes/no)? ")
 			confirmation, err := reader.ReadString('\n')
@@ -56,6 +59,12 @@ func Encrypt(targetDriveID string) error {
 
 		}
 	}
+
+	// Validate input
+	if found == false {
+		return errors.New(fmt.Sprintf("drive with id '%s' could not be found", targetDriveID))
+	}
+
 	return nil
 }
 
@@ -69,9 +78,11 @@ func Decrypt(targetDriveID string) error {
 		return err
 	}
 
+	found := false
 	// Get the drive name
 	for i, drive := range drives {
 		if strconv.Itoa(i) == targetDriveID {
+			found = true
 			// Ask for confirmation
 			fmt.Print("Are you sure you want to decrypt " + drive + " (yes/no)? ")
 			confirmation, err := reader.ReadString('\n')
@@ -103,6 +114,12 @@ func Decrypt(targetDriveID string) error {
 
 		}
 	}
+
+	// Validate input
+	if found == false {
+		return errors.New(fmt.Sprintf("drive with id '%s' could not be found", targetDriveID))
+	}
+
 	return nil
 }
 
