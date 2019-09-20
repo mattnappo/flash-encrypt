@@ -14,7 +14,7 @@ func NewCLI() error {
 	// Print the header information
 	printHeader()
 
-	// Set stdin input buffer
+	// Initialize stdin input buffer
 	reader := bufio.NewReader(os.Stdin)
 
 	for {
