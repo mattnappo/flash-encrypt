@@ -2,13 +2,22 @@ package cli
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
-	"github.com/xoreo/flash-encrypt/api"
+
+	"io/ioutil"
 	"os"
 	"os/exec"
 	"strings"
+
+	"github.com/xoreo/flash-encrypt/api"
+	"github.com/xoreo/flash-encrypt/common"
 )
 
+var (
+	// ErrInvalidParamCount is thrown when an invalid number of parameters is used in a command.
+	ErrInvalidParamCount = errors.New("invalid number of parameters to call method")
+)
 // NewCLI creates a new CLI.
 func NewCLI() error {
 	// Print the header information
@@ -42,7 +51,9 @@ func NewCLI() error {
 	}
 }
 
+// handleCommand determines which receiver to use to execute the command.
 func handleCommand(command Command) error {
+	// The receiver handler
 	switch command.Receiver {
 	case "":
 		err := handleNoReceiver(command)
@@ -58,9 +69,15 @@ func handleCommand(command Command) error {
 	return nil
 }
 
+// handleNoReceiver handles commands with no receiver.
 func handleNoReceiver(command Command) error {
 	switch command.Method {
 	case "encrypt":
+		// Check params
+		if len(command.Params) != 1 {
+			return ErrInvalidParamCount
+		}
+
 		// Run the code to encrypt
 		err := api.Encrypt(command.Params[0])
 		if err != nil {
@@ -69,6 +86,11 @@ func handleNoReceiver(command Command) error {
 		break
 
 	case "decrypt":
+		// Check params
+		if len(command.Params) != 1 {
+			return ErrInvalidParamCount
+		}
+
 		// Run the code to decrypt
 		err := api.Decrypt(command.Params[0])
 		if err != nil {
@@ -84,16 +106,12 @@ func handleNoReceiver(command Command) error {
 		}
 		break
 
-	case "status":
-		// Run the code to check the status of a drive
-		err := api.Status()
+	case "help":
+		// Run the help command
+		err := printHelp()
 		if err != nil {
 			return err
 		}
-		break
-
-	case "help":
-		printHelp()
 		break
 
 	case "exit":
@@ -106,6 +124,7 @@ func handleNoReceiver(command Command) error {
 	return nil
 }
 
+// printHeader prints the header of the CLI.
 func printHeader() {
 	exec.Command("clear")
 	fmt.Println("Welcome to")
@@ -117,6 +136,16 @@ func printHeader() {
 	fmt.Println("Run 'help' for help!")
 }
 
-func printHelp() {
-	fmt.Println("this is the help")
+// printHelp prints the help screen of the CLI.
+func printHelp() error {
+	helpFile := fmt.Sprintf("cli%shelp.txt", common.OSSlash)
+	help, err := ioutil.ReadFile(helpFile)
+	if err != nil {
+		return err
+	}
+
+	helpString := string(help)
+
+	fmt.Println(helpString)
+	return nil
 }

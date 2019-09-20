@@ -123,6 +123,5 @@ func ListDrives() error {
 }
 
 func Status() error {
-	fmt.Println("status")
 	return nil
 }
