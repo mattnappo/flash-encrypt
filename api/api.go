@@ -143,6 +143,8 @@ func ListDrives() error {
 	return nil
 }
 
+// Status returns the encryption status on a certain drive.
+// This method has not been implemented yet.
 func Status() error {
 	return nil
 }

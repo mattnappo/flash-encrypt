@@ -25,8 +25,12 @@ func ListDir(rootPath string) ([]string, error) {
 	}
 
 	var paths []string
+
+	// Don't add prohibited files (defined in common)
 	for _, path := range allPaths {
 		add := true
+
+		// For each prohibited file, don't add it.
 		for _, prohibitedFile := range common.ProhibitedFiles {
 			prohibitedFileFmt := fmt.Sprintf("%s%s", prohibitedFile, common.OSSlash)
 			if strings.Contains(path, prohibitedFileFmt) {
@@ -34,6 +38,7 @@ func ListDir(rootPath string) ([]string, error) {
 			}
 		}
 
+		// Add the file
 		if add {
 			paths = append(paths, path)
 		}

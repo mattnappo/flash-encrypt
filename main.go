@@ -6,8 +6,9 @@ import (
 )
 
 func main() {
+	// Start the CLI
 	err := cli.NewCLI()
-	if err != nil {
+	if err != nil { // Check err
 		fmt.Println()
 	}
 }
