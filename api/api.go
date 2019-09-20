@@ -4,13 +4,14 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
-	"github.com/xoreo/flash-encrypt/crypto"
-	"github.com/xoreo/flash-encrypt/fs"
-	"golang.org/x/crypto/ssh/terminal"
+
 	"os"
 	"strconv"
 	"strings"
-	"syscall"
+
+	"github.com/xoreo/flash-encrypt/common"
+	"github.com/xoreo/flash-encrypt/crypto"
+	"github.com/xoreo/flash-encrypt/fs"
 )
 
 // Encrypt is an abstracted method to encrypt a directory.
@@ -37,13 +38,11 @@ func Encrypt(targetDriveID string) error {
 			confirmation = strings.TrimSuffix(confirmation, "\n")
 
 			if confirmation == "yes" {
-				// Ask for passphrase
-				fmt.Print("Passphrase: ")
-				passphraseBytes, err := terminal.ReadPassword(int(syscall.Stdin))
+				// Read the passphrase
+				passphrase, err := common.GetPassphrase(true)
 				if err != nil {
 					return err
 				}
-				passphrase := strings.TrimSpace(string(passphraseBytes))
 
 				// Encrypt the entire flash drive
 				err = crypto.EncryptDir(fs.GetDrivePath(drive), passphrase)
@@ -62,7 +61,7 @@ func Encrypt(targetDriveID string) error {
 
 	// Validate input
 	if found == false {
-		return errors.New(fmt.Sprintf("drive with id '%s' could not be found", targetDriveID))
+		return errors.New(fmt.Sprintf("drive with id '%s' could not be found.", targetDriveID))
 	}
 
 	return nil
@@ -92,13 +91,11 @@ func Decrypt(targetDriveID string) error {
 			confirmation = strings.TrimSuffix(confirmation, "\n")
 
 			if confirmation == "yes" {
-				// Ask for passphrase
-				fmt.Print("Passphrase: ")
-				passphraseBytes, err := terminal.ReadPassword(int(syscall.Stdin))
+				// Read the passphrase
+				passphrase, err := common.GetPassphrase(false)
 				if err != nil {
 					return err
 				}
-				passphrase := strings.TrimSpace(string(passphraseBytes))
 
 				// Decrypt the entire directory
 				err = crypto.DecryptDir(fs.GetDrivePath(drive), passphrase)
@@ -117,7 +114,7 @@ func Decrypt(targetDriveID string) error {
 
 	// Validate input
 	if found == false {
-		return errors.New(fmt.Sprintf("drive with id '%s' could not be found", targetDriveID))
+		return errors.New(fmt.Sprintf("drive with id '%s' could not be found.", targetDriveID))
 	}
 
 	return nil
