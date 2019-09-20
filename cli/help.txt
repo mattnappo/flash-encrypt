@@ -1,4 +1,3 @@
-Commands:
     encrypt(int driveID)
       Encrypt a flash drive with id driveID.
 
