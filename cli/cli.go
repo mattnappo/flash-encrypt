@@ -20,7 +20,7 @@ var (
 )
 
 // NewCLI creates a new CLI.
-func NewCLI() {
+func NewCLI() error {
 	// Print the header information
 	printHeader()
 
@@ -45,11 +45,15 @@ func NewCLI() {
 
 		// Handle the command
 		err = handleCommand(command)
+		if err.Error() == "exit" {
+			return err
+		}
+
 		if err != nil {
 			fmt.Println(err.Error())
 		}
-
 	}
+
 }
 
 // handleCommand determines which receiver to use to execute the command.
@@ -61,6 +65,7 @@ func handleCommand(command Command) error {
 		if err != nil {
 			return err
 		}
+
 		break
 
 	default:
@@ -116,7 +121,7 @@ func handleNoReceiver(command Command) error {
 		break
 
 	case "exit":
-		return nil
+		return errors.New("exit")
 
 	default:
 		fmt.Printf("'%s' is not a valid command. Run 'help' for help.\n", command.Method)

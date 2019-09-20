@@ -130,11 +130,16 @@ func ListDrives() error {
 		panic(err)
 	}
 
-	// Print these drives
-	fmt.Println("Connected drives:")
-	for i, drive := range drives {
-		fmt.Printf("[%d] %s\n", i, drive)
+	if len(drives) > 0 {
+		// Print these drives
+		fmt.Println("Connected drives:")
+		for i, drive := range drives {
+			fmt.Printf("[%d] %s\n", i, drive)
+		}
+	} else {
+		fmt.Printf("There are no connected drives.")
 	}
+
 
 	return nil
 }

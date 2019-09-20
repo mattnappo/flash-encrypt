@@ -1,9 +1,13 @@
 package main
 
 import (
+	"fmt"
 	"github.com/xoreo/flash-encrypt/cli"
 )
 
 func main() {
-	cli.NewCLI()
+	err := cli.NewCLI()
+	if err != nil {
+		fmt.Println()
+	}
 }

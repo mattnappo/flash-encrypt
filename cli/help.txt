@@ -7,3 +7,9 @@ Commands:
 
     drives()
       Returns a list of the driveIDs of all connected drives.
+
+    help()
+      Display this help menu.
+
+    exit()
+        Exit flash-encrypt.
