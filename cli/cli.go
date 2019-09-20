@@ -45,15 +45,15 @@ func NewCLI() error {
 
 		// Handle the command
 		err = handleCommand(command)
-		if err.Error() == "exit" {
-			return err
-		}
-
 		if err != nil {
-			fmt.Println(err.Error())
+			// If exit
+			if err.Error() == "exit" {
+				return err
+			}
+
+			fmt.Println(err.Error()) // Else, print the error
 		}
 	}
-
 }
 
 // handleCommand determines which receiver to use to execute the command.

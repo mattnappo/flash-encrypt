@@ -137,9 +137,8 @@ func ListDrives() error {
 			fmt.Printf("[%d] %s\n", i, drive)
 		}
 	} else {
-		fmt.Printf("There are no connected drives.")
+		fmt.Println("no connected drives found")
 	}
-
 
 	return nil
 }
