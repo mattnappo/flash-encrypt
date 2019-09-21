@@ -32,10 +32,10 @@ func ListDir(rootPath string) ([]string, error) {
 
 		// For each prohibited file, don't add it.
 		for _, prohibitedFile := range common.ProhibitedFiles {
-			prohibitedFileFmt := fmt.Sprintf("%s%s",	 prohibitedFile, common.OSSlash)
+			prohibitedFileFmt := fmt.Sprintf("%s%s", prohibitedFile, common.OSSlash)
 
 			tempParts := strings.Split(path, common.OSSlash)
-			firstTwoChars := tempParts[len(tempParts) - 1][:2]
+			firstTwoChars := tempParts[len(tempParts)-1][:2]
 
 			if strings.Contains(path, prohibitedFileFmt) || firstTwoChars == "._" {
 				add = false
