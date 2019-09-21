@@ -5,13 +5,11 @@ import (
 	"errors"
 	"fmt"
 
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"strings"
 
 	"github.com/xoreo/flash-encrypt/api"
-	"github.com/xoreo/flash-encrypt/common"
 )
 
 var (
@@ -144,17 +142,8 @@ func printHeader() {
 
 // printHelp prints the help screen of the CLI.
 func printHelp() error {
-	helpFile := fmt.Sprintf("cli%shelp.txt", common.OSSlash)
-
-	// Read from the help file
-	help, err := ioutil.ReadFile(helpFile)
-	if err != nil {
-		return err
-	}
-
 	// Print the help file
-	helpString := string(help)
-	fmt.Println(helpString)
+	fmt.Println(Help)
 
 	return nil
 }

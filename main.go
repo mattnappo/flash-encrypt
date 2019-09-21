@@ -5,6 +5,8 @@ import (
 	"github.com/xoreo/flash-encrypt/cli"
 )
 
+// //go:generate go run scripts/includetxt.go
+
 func main() {
 	// Start the CLI
 	err := cli.NewCLI()
