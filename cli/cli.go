@@ -83,7 +83,7 @@ func handleNoReceiver(command Command) error {
 		}
 
 		// Run the code to encrypt
-		err := api.Encrypt(command.Params[0])
+		err := api.EncryptDrive(command.Params[0])
 		if err != nil {
 			return err
 		}
@@ -96,7 +96,7 @@ func handleNoReceiver(command Command) error {
 		}
 
 		// Run the code to decrypt
-		err := api.Decrypt(command.Params[0])
+		err := api.DecryptDrive(command.Params[0])
 		if err != nil {
 			return err
 		}
