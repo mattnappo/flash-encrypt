@@ -110,7 +110,7 @@ func handleNoReceiver(command Command, isStandalone bool) error {
 				return err
 			}
 
-			return nil
+			break
 		}
 
 		// Check params
@@ -134,8 +134,17 @@ func handleNoReceiver(command Command, isStandalone bool) error {
 		break
 
 	case "help":
+		if isStandalone {
+			// Run the help command
+			err := printHelp(isStandalone)
+			if err != nil {
+				return err
+			}
+			break
+		}
+
 		// Run the help command
-		err := printHelp()
+		err := printHelp(isStandalone)
 		if err != nil {
 			return err
 		}
@@ -167,7 +176,13 @@ func printHeader(isStandalone bool) {
 }
 
 // printHelp prints the help screen of the CLI.
-func printHelp() error {
+func printHelp(isStandalone bool) error {
+	if isStandalone {
+		// Print the help file
+		fmt.Println(StandaloneHelp)
+		return nil
+	}
+
 	// Print the help file
 	fmt.Println(Help)
 
