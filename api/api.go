@@ -86,7 +86,7 @@ func EncryptDir(targetDir string) error {
 			return err
 		}
 
-		// Encrypt the entire flash drive
+		// Encrypt the entire directory
 		err = crypto.EncryptDir(targetDir, passphrase)
 		if err != nil {
 			return err
@@ -146,6 +146,37 @@ func DecryptDrive(targetDriveID string) error {
 	// Validate input
 	if found == false {
 		return errors.New(fmt.Sprintf("drive with id '%s' could not be found.", targetDriveID))
+	}
+
+	return nil
+}
+
+// DecryptDir is an abstracted method to decrypt a directory.
+func DecryptDir(targetDir string) error {
+	reader := bufio.NewReader(os.Stdin)
+
+	// Confirm
+	fmt.Printf("Are you sure you want to decrypt '%s' (yes/no)? ", targetDir)
+	confirmation, err := reader.ReadString('\n')
+	if err != nil {
+		return err
+	}
+	confirmation = strings.TrimSuffix(confirmation, "\n")
+
+	if confirmation == "yes" {
+		// Read the passphrase
+		passphrase, err := common.GetPassphrase(true)
+		if err != nil {
+			return err
+		}
+
+		// Decrypt the entire directory
+		err = crypto.DecryptDir(targetDir, passphrase)
+		if err != nil {
+			return err
+		}
+
+		fmt.Printf("Decrypted '%s'\n", targetDir)
 	}
 
 	return nil
