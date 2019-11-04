@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/xoreo/flash-encrypt/api"
+	"github.com/xoreo/flash-encrypt/common"
 )
 
 var (
@@ -18,7 +19,7 @@ var (
 )
 
 // NewCLI creates a new CLI.
-func NewCLI() error {
+func NewCLI(isStandalone bool) error {
 	// Print the header information
 	printHeader()
 
@@ -42,7 +43,7 @@ func NewCLI() error {
 		}
 
 		// Handle the command
-		err = handleCommand(command)
+		err = handleCommand(command, isStandalone)
 		if err != nil {
 			// If exit
 			if err.Error() == "exit" {
@@ -55,11 +56,11 @@ func NewCLI() error {
 }
 
 // handleCommand determines which receiver to use to execute the command.
-func handleCommand(command Command) error {
+func handleCommand(command Command, isStandalone bool) error {
 	// The receiver handler
 	switch command.Receiver {
 	case "":
-		err := handleNoReceiver(command)
+		err := handleNoReceiver(command, isStandalone)
 		if err != nil {
 			return err
 		}
@@ -74,9 +75,20 @@ func handleCommand(command Command) error {
 }
 
 // handleNoReceiver handles commands with no receiver.
-func handleNoReceiver(command Command) error {
+func handleNoReceiver(command Command, isStandalone bool) error {
 	switch command.Method {
 	case "encrypt":
+		if isStandalone { // If this is a standalone CLI
+			// Make sure that the directory exists, then encrypt it.
+			common.CreateDirIfDoesNotExist(common.EncryptionDir)
+			err := api.EncryptDir(common.EncryptionDir)
+			if err != nil {
+				return err
+			}
+
+			return nil
+		}
+
 		// Check params
 		if len(command.Params) != 1 {
 			return ErrInvalidParamCount
@@ -90,6 +102,17 @@ func handleNoReceiver(command Command) error {
 		break
 
 	case "decrypt":
+		if isStandalone { // If this is a standalone CLI
+			// Make sure that the directory exists, then encrypt it.
+			common.CreateDirIfDoesNotExist(common.EncryptionDir)
+			err := api.DecryptDir(common.EncryptionDir)
+			if err != nil {
+				return err
+			}
+
+			return nil
+		}
+
 		// Check params
 		if len(command.Params) != 1 {
 			return ErrInvalidParamCount

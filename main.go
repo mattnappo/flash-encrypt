@@ -15,14 +15,10 @@ var StandaloneFlag = flag.Bool("standalone", false, "Run flash-encrypt independe
 func main() {
 	flag.Parse()
 
-	if *StandaloneFlag {
-		cli.StandaloneCLI()
-	} else {
-		// Start the CLI
-		err := cli.NewCLI()
-		if err != nil { // Check err
-			fmt.Println("Bye!")
-		}
+	// Start the CLI
+	err := cli.NewCLI(*StandaloneFlag)
+	if err != nil { // Check err
+		fmt.Println("Bye!")
 	}
 
 }
