@@ -11,6 +11,8 @@ import (
 
 	"github.com/xoreo/flash-encrypt/api"
 	"github.com/xoreo/flash-encrypt/common"
+
+	bindata "github.com/go-bindata/go-bindata"
 )
 
 var (
@@ -178,13 +180,21 @@ func printHeader(isStandalone bool) {
 // printHelp prints the help screen of the CLI.
 func printHelp(isStandalone bool) error {
 	if isStandalone {
-		// Print the help file
-		fmt.Println(StandaloneHelp)
+		// Print the standalone help file
+		helpMenu, err := bindata.Asset("help/help_standalone.txt")
+		if err != nil {
+			return err
+		}
+		fmt.Println(helpMenu)
 		return nil
 	}
 
 	// Print the help file
-	fmt.Println(Help)
+	helpMenu, err := bindata.Asset("help/help.txt")
+	if err != nil {
+		return err
+	}
+	fmt.Println(helpMenu)
 
 	return nil
 }
