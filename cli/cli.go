@@ -21,7 +21,7 @@ var (
 // NewCLI creates a new CLI.
 func NewCLI(isStandalone bool) error {
 	// Print the header information
-	printHeader()
+	printHeader(isStandalone)
 
 	// Set stdin input buffer
 	reader := bufio.NewReader(os.Stdin)
@@ -152,13 +152,16 @@ func handleNoReceiver(command Command, isStandalone bool) error {
 }
 
 // printHeader prints the header of the CLI.
-func printHeader() {
+func printHeader(isStandalone bool) {
 	exec.Command("clear")
 	fmt.Println("Welcome to")
 	fmt.Println("   ______   ___   ______ __    _____  ____________  _____  ______")
 	fmt.Println("  / __/ /  / _ | / __/ // /___/ __/ |/ / ___/ _ \\ \\/ / _ \\/_  __/")
 	fmt.Println(" / _// /__/ __ |_\\ \\/ _  /___/ _//    / /__/ , _/\\  / ___/ / /   ")
 	fmt.Println("/_/ /____/_/ |_/___/_//_/   /___/_/|_/\\___/_/|_| /_/_/    /_/    ")
+	if isStandalone {
+		fmt.Println("-- Standalone Mode --")
+	}
 	fmt.Println("v2.0!")
 	fmt.Println("Run 'help' for help!")
 }
