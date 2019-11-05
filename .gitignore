@@ -1,3 +1,6 @@
+.DS_Store
+go-bindata
+
 .idea/
 # Binaries for programs and plugins
 *.exe
