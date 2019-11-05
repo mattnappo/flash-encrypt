@@ -164,8 +164,8 @@ func DecryptDir(targetDir string) error {
 	confirmation = strings.TrimSuffix(confirmation, "\n")
 
 	if confirmation == "yes" {
-		// Read the passphrase
-		passphrase, err := common.GetPassphrase(true)
+		// Read the passphrase with no confirmation
+		passphrase, err := common.GetPassphrase(false)
 		if err != nil {
 			return err
 		}
