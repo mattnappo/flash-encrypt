@@ -1,8 +1,8 @@
-// Code generated for package main by go-bindata DO NOT EDIT. (@generated)
+// Code generated for package common by go-bindata DO NOT EDIT. (@generated)
 // sources:
 // assets/help.txt
 // assets/help_standalone.txt
-package cli
+package common
 
 import (
 	"bytes"

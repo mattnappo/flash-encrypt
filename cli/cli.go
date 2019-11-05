@@ -179,7 +179,7 @@ func printHeader(isStandalone bool) {
 func printHelp(isStandalone bool) error {
 	if isStandalone {
 		// Print the standalone help file
-		helpMenu, err := Asset("assets/help_standalone.txt")
+		helpMenu, err := common.Asset("assets/help_standalone.txt")
 		if err != nil {
 			return err
 		}
@@ -188,7 +188,7 @@ func printHelp(isStandalone bool) error {
 	}
 
 	// Print the help file
-	helpMenu, err := Asset("assets/help.txt")
+	helpMenu, err := common.Asset("assets/help.txt")
 	if err != nil {
 		return err
 	}
