@@ -1,0 +1,11 @@
+    encrypt()
+      Encrypt ./secure folder.
+
+    decrypt()
+      Decrypt the ./secure folder.
+
+    help()
+      Display this help menu.
+
+    exit()
+        Exit flash-encrypt.

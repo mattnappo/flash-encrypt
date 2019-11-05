@@ -3,6 +3,8 @@ package common
 import (
 	"errors"
 	"fmt"
+	"os"
+	"path/filepath"
 	"strings"
 	"syscall"
 
@@ -23,6 +25,11 @@ var (
 	OSSlash = "/"
 )
 
+const (
+	// EncryptionDir the directory name that the standalone CLI will encrypt.
+	EncryptionDir = "./secure"
+)
+
 // ByteSliceEqual returns true if two []byte a and b are equal,
 // false if they are not.
 func ByteSliceEqual(a, b []byte) bool {
@@ -35,6 +42,18 @@ func ByteSliceEqual(a, b []byte) bool {
 		}
 	}
 	return true
+}
+
+// CreateDirIfDoesNotExist creates a directory if it does not already exist.
+func CreateDirIfDoesNotExist(dir string) error {
+	dir = filepath.FromSlash(dir)
+	if _, err := os.Stat(dir); os.IsNotExist(err) {
+		err = os.MkdirAll(dir, 0755)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // GetPassphrase will read a passphrase from stdin.

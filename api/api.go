@@ -14,8 +14,8 @@ import (
 	"github.com/xoreo/flash-encrypt/fs"
 )
 
-// Encrypt is an abstracted method to encrypt a directory.
-func Encrypt(targetDriveID string) error {
+// EncryptDrive is an abstracted method to encrypt a drive.
+func EncryptDrive(targetDriveID string) error {
 	reader := bufio.NewReader(os.Stdin)
 
 	// Get the connected drives
@@ -30,7 +30,7 @@ func Encrypt(targetDriveID string) error {
 		if strconv.Itoa(i) == targetDriveID {
 			found = true
 			// Confirm
-			fmt.Print("Are you sure you want to encrypt " + drive + " (yes/no)? ")
+			fmt.Printf("Are you sure you want to encrypt '%s' (yes/no)? ", drive)
 			confirmation, err := reader.ReadString('\n')
 			if err != nil {
 				return err
@@ -50,7 +50,7 @@ func Encrypt(targetDriveID string) error {
 					return err
 				}
 
-				fmt.Printf("Encrypted %s\n", drive)
+				fmt.Printf("Encrypted '%s'\n", drive)
 
 			} else {
 				return nil
@@ -67,8 +67,39 @@ func Encrypt(targetDriveID string) error {
 	return nil
 }
 
-// Decrypt is an abstracted method to decrypt a directory.
-func Decrypt(targetDriveID string) error {
+// EncryptDir is an abstracted method to encrypt a directory.
+func EncryptDir(targetDir string) error {
+	reader := bufio.NewReader(os.Stdin)
+
+	// Confirm
+	fmt.Printf("Are you sure you want to encrypt '%s' (yes/no)? ", targetDir)
+	confirmation, err := reader.ReadString('\n')
+	if err != nil {
+		return err
+	}
+	confirmation = strings.TrimSuffix(confirmation, "\n")
+
+	if confirmation == "yes" {
+		// Read the passphrase
+		passphrase, err := common.GetPassphrase(true)
+		if err != nil {
+			return err
+		}
+
+		// Encrypt the entire directory
+		err = crypto.EncryptDir(targetDir, passphrase)
+		if err != nil {
+			return err
+		}
+
+		fmt.Printf("Encrypted '%s'\n", targetDir)
+	}
+
+	return nil
+}
+
+// DecryptDrive is an abstracted method to decrypt a drive.
+func DecryptDrive(targetDriveID string) error {
 	reader := bufio.NewReader(os.Stdin)
 
 	// Get the connected drives
@@ -83,7 +114,7 @@ func Decrypt(targetDriveID string) error {
 		if strconv.Itoa(i) == targetDriveID {
 			found = true
 			// Ask for confirmation
-			fmt.Print("Are you sure you want to decrypt " + drive + " (yes/no)? ")
+			fmt.Printf("Are you sure you want to decrypt '%s' (yes/no)? ", drive)
 			confirmation, err := reader.ReadString('\n')
 			if err != nil {
 				return err
@@ -120,6 +151,38 @@ func Decrypt(targetDriveID string) error {
 	return nil
 }
 
+// DecryptDir is an abstracted method to decrypt a directory.
+func DecryptDir(targetDir string) error {
+	reader := bufio.NewReader(os.Stdin)
+
+	// Confirm
+	fmt.Printf("Are you sure you want to decrypt '%s' (yes/no)? ", targetDir)
+	confirmation, err := reader.ReadString('\n')
+	if err != nil {
+		return err
+	}
+	confirmation = strings.TrimSuffix(confirmation, "\n")
+
+	if confirmation == "yes" {
+		// Read the passphrase
+		passphrase, err := common.GetPassphrase(true)
+		if err != nil {
+			return err
+		}
+
+		// Decrypt the entire directory
+		err = crypto.DecryptDir(targetDir, passphrase)
+		if err != nil {
+			return err
+		}
+
+		fmt.Printf("Decrypted '%s'\n", targetDir)
+	}
+
+	return nil
+}
+
+// ListDrives lists all available drives.
 func ListDrives() error {
 	// Get connected drives
 	drives, err := fs.GetDrivesDarwin()
